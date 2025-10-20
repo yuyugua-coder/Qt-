@@ -1,0 +1,37 @@
+1.切换编译模式为 Release在 Qt Creator 左下角，将编译模式从 Debug 切换为 Release（Debug 版本包含调试信息，体积大且依赖调试库，不适合发布）。
+
+
+2.编译项目点击菜单栏 构建 -> 构建项目（或按 Ctrl+B），编译完成后，在项目的 build-xxx-Release 目录下会生成 .exe 文件（例如 myapp.exe）。
+
+
+3.找到 windeployqt 工具路径该工具位于 Qt 安装目录的 bin 文件夹下，例如：
+Qt 6.9 MinGW 64 位：C:\Qt\6.9.1\mingw_64\bin\windeployqt.exe
+注意：路径需与编译时使用的 Qt 版本和编译器（MinGW/MSVC）一致。
+
+
+4.复制 .exe 到单独的文件夹为了避免文件混乱，建议新建一个文件夹（如 MyAppRelease），将 Release 版本的 myapp.exe 复制到该文件夹中。
+
+
+5.使用 windeployqt 收集依赖
+打开 命令提示符（CMD） 或 PowerShell；
+切换到 windeployqt 所在目录（或直接输入完整路径）；
+执行命令：
+bash
+# 格式：windeployqt.exe [你的exe文件路径]
+C:\Qt\6.9.1\mingw_64\bin\windeployqt.exe D:\MyAppRelease\myapp.exe
+工具会自动分析并复制所需的 .dll、plugins（插件）、translations（翻译文件）等依赖到 MyAppRelease 文件夹中。
+
+可选：编译器相关 DLL：如果使用 MinGW 编译，可能需要额外复制 MinGW 的运行库（如 libgcc_s_seh-1.dll、libstdc++-6.dll、libwinpthread-1.dll），这些文件在 Qt\6.9.1\mingw_64\bin 目录下，直接复制到 MyAppRelease 即可。
+第三方库：如果项目使用了非 Qt 的第三方库（如 OpenCV、MySQL 驱动），需要手动将其 .dll 复制到 MyAppRelease 中。
+
+6.使用NSIS制作安装包
+下载安装 NSIS
+
+7.准备程序文件，确保程序及依赖文件齐全（MyAppRelease 目录）。
+
+
+8.创建安装脚本（.nsi）新建文本文件，保存为 MyApp.nsi。
+
+
+9.编译生成安装包右键 
+MyApp.nsi → “Compile NSIS Script”，生成安装包 MyAppInstaller.exe。
